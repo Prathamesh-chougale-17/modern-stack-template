@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { authClient } from "@/lib/auth-client";
+import { client } from "@/lib/orpc";
 import {
   Card,
   CardContent,
@@ -26,13 +26,13 @@ import { toast } from "sonner";
 
 interface User {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
   role: string;
   banned: boolean;
-  banReason?: string;
-  banExpires?: number;
-  createdAt: Date;
+  banReason?: string | null;
+  banExpires?: Date | null;
+  createdAt?: Date | null;
 }
 
 export function UserManagement() {
@@ -42,16 +42,14 @@ export function UserManagement() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // This would be a custom endpoint you'd need to create
-      // For now, this is a placeholder showing the structure
-      const response = await fetch("/api/admin/users");
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.users || []);
-      }
+      // Fetch users via oRPC
+      const data = await client.admin.getUsers();
+      setUsers(data.users);
     } catch (error) {
       console.error("Failed to fetch users:", error);
-      toast.error("Failed to fetch users");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to fetch users"
+      );
     } finally {
       setLoading(false);
     }
@@ -73,7 +71,9 @@ export function UserManagement() {
             <Users className="h-5 w-5 text-amber-500" />
             <div>
               <CardTitle>User Management</CardTitle>
-              <CardDescription>Manage users, roles, and permissions</CardDescription>
+              <CardDescription>
+                Manage users, roles, and permissions
+              </CardDescription>
             </div>
           </div>
           <Button
@@ -82,7 +82,9 @@ export function UserManagement() {
             size="sm"
             disabled={loading}
           >
-            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -112,7 +114,9 @@ export function UserManagement() {
               <TableBody>
                 {users.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableCell className="font-medium">
+                      {user.name || "N/A"}
+                    </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <Badge
@@ -129,13 +133,18 @@ export function UserManagement() {
                       {user.banned ? (
                         <Badge variant="destructive">Banned</Badge>
                       ) : (
-                        <Badge variant="outline" className="text-green-500 border-green-500">
+                        <Badge
+                          variant="outline"
+                          className="text-green-500 border-green-500"
+                        >
                           Active
                         </Badge>
                       )}
                     </TableCell>
                     <TableCell>
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </TableCell>
                     <TableCell className="text-right">
                       <UserActions user={user} onUpdate={handleUserUpdate} />

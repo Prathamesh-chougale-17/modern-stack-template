@@ -28,15 +28,25 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { MoreHorizontal, Shield, Ban, Unlock, Trash2, User } from "lucide-react";
+import {
+  MoreHorizontal,
+  Shield,
+  Ban,
+  Unlock,
+  Trash2,
+  User,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface User {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
   role: string;
   banned: boolean;
+  banReason?: string | null;
+  banExpires?: Date | null;
+  createdAt?: Date | null;
 }
 
 interface UserActionsProps {
@@ -55,9 +65,10 @@ export function UserActions({ user, onUpdate }: UserActionsProps) {
   const handleRoleChange = async () => {
     setLoading(true);
     try {
+      // Type assertion needed because Better Auth types don't include custom adminRoles
       await authClient.admin.setRole({
         userId: user.id,
-        role: selectedRole,
+        role: selectedRole as "user" | "admin",
       });
       toast.success(`Role updated to ${selectedRole}`);
       setRoleDialogOpen(false);
@@ -77,7 +88,7 @@ export function UserActions({ user, onUpdate }: UserActionsProps) {
         userId: user.id,
         banReason: banReason || "Violated terms of service",
       });
-      toast.success(`User ${user.name} has been banned`);
+      toast.success(`User ${user.name || user.email} has been banned`);
       setBanDialogOpen(false);
       onUpdate();
     } catch (error) {
@@ -94,7 +105,7 @@ export function UserActions({ user, onUpdate }: UserActionsProps) {
       await authClient.admin.unbanUser({
         userId: user.id,
       });
-      toast.success(`User ${user.name} has been unbanned`);
+      toast.success(`User ${user.name || user.email} has been unbanned`);
       onUpdate();
     } catch (error) {
       toast.error("Failed to unban user");
@@ -110,7 +121,7 @@ export function UserActions({ user, onUpdate }: UserActionsProps) {
       await authClient.admin.removeUser({
         userId: user.id,
       });
-      toast.success(`User ${user.name} has been deleted`);
+      toast.success(`User ${user.name || user.email} has been deleted`);
       setDeleteDialogOpen(false);
       onUpdate();
     } catch (error) {
@@ -164,7 +175,7 @@ export function UserActions({ user, onUpdate }: UserActionsProps) {
           <DialogHeader>
             <DialogTitle>Change User Role</DialogTitle>
             <DialogDescription>
-              Update the role for {user.name}
+              Update the role for {user.name || user.email}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -203,7 +214,7 @@ export function UserActions({ user, onUpdate }: UserActionsProps) {
           <DialogHeader>
             <DialogTitle>Ban User</DialogTitle>
             <DialogDescription>
-              This will prevent {user.name} from accessing the platform
+              This will prevent {user.name || user.email} from accessing the platform
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -242,8 +253,8 @@ export function UserActions({ user, onUpdate }: UserActionsProps) {
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
-              Are you sure you want to permanently delete {user.name}? This action
-              cannot be undone.
+              Are you sure you want to permanently delete {user.name || user.email}? This
+              action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
