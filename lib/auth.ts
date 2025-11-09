@@ -11,10 +11,6 @@ const db = client.db(env.MONGODB_DB_NAME);
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
-  emailAndPassword: {
-    enabled: true,
-    requireEmailVerification: false, // Set to true in production
-  },
   socialProviders: {
     google: {
       clientId: env.GOOGLE_CLIENT_ID,

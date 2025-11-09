@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
-import { AlertCircle, CheckCircle2, Mail } from "lucide-react";
+import { AlertCircle, Mail } from "lucide-react";
 import {
   InputOTP,
   InputOTPGroup,
@@ -29,14 +29,12 @@ export default function SignInOTPPage() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
     setLoading(true);
 
     try {
@@ -45,7 +43,6 @@ export default function SignInOTPPage() {
         type: "sign-in",
       });
       setOtpSent(true);
-      setSuccess("OTP sent to your email! Check console in development.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to send OTP");
     } finally {
@@ -94,14 +91,6 @@ export default function SignInOTPPage() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              {success && (
-                <Alert className="border-green-500/50 bg-green-950/20">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  <AlertDescription className="text-green-500">
-                    {success}
-                  </AlertDescription>
-                </Alert>
-              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
@@ -117,12 +106,9 @@ export default function SignInOTPPage() {
                     className="pl-10"
                   />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  In development, check console for OTP
-                </p>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
+            <CardFooter className="flex mt-4 flex-col space-y-4">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
                   <>
@@ -135,11 +121,7 @@ export default function SignInOTPPage() {
               </Button>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <Link href="/sign-in" className="hover:underline">
-                  Sign in with password
-                </Link>
-                <span>·</span>
-                <Link href="/sign-up" className="hover:underline">
-                  Sign up
+                  Sign in with Google
                 </Link>
               </div>
             </CardFooter>
