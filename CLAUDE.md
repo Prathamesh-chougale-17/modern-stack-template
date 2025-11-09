@@ -36,6 +36,7 @@ When the dev server is running:
 - **API Layer**: oRPC for type-safe RPC with automatic OpenAPI generation
 - **Authentication**: Better Auth with RBAC (Role-Based Access Control)
 - **Database**: MongoDB
+- **Email**: Nodemailer with SMTP (OTP verification, password reset, welcome emails)
 - **UI**: shadcn/ui + Tailwind CSS v4 + Radix UI
 - **State**: React Query (server state), React Hook Form (forms), nuqs (URL state)
 - **AI**: Google Gemini (via Vercel AI SDK)
@@ -63,6 +64,9 @@ lib/                    # Core utilities and configuration
   orpc.ts               # Client-side oRPC client
   orpc.server.ts        # Server-side oRPC client (for SSR)
   mongodb.ts            # MongoDB client setup
+  email/                # Email configuration
+    mailer.ts           # Nodemailer transporter and sendEmail utility
+    templates.ts        # HTML email templates (OTP, welcome, security alerts)
 ai/                     # AI configuration (Google Gemini)
 hooks/                  # Custom React hooks
 proxy.ts                # Route protection middleware
@@ -133,6 +137,23 @@ This project uses Better Auth for authentication with role-based access control.
 **Auth Configuration**: `lib/auth.ts`
 **Client Setup**: `lib/auth-client.ts`
 **API Routes**: `app/api/auth/[...all]/route.ts`
+
+### Authentication Methods
+1. **Email & Password**: Traditional email/password authentication
+2. **Email OTP**: Passwordless authentication with 6-digit OTP codes
+3. **Google OAuth**: Sign in with Google account
+
+### Email Integration
+The app uses **Nodemailer** to send emails via SMTP. See [NODEMAILER_SETUP_GUIDE.md](NODEMAILER_SETUP_GUIDE.md) for configuration.
+
+**Email Templates** (in `lib/email/templates.ts`):
+- Sign-in OTP emails
+- Email verification
+- Password reset
+- Welcome emails (after signup)
+- Security alerts
+
+All templates use a dark theme with gradient accents matching the app design.
 
 ### Roles
 - **user**: Default role for new users
@@ -212,13 +233,34 @@ Environment variables are validated via `env.ts` using `@t3-oss/env-nextjs` and 
 
 ### Required Environment Variables
 ```bash
+# Database
 MONGODB_URI=mongodb://localhost:27017/game-aggregator
+MONGODB_DB_NAME=game-aggregator
+
+# Authentication
 BETTER_AUTH_SECRET=your-secret-key-minimum-32-characters
 BETTER_AUTH_URL=http://localhost:3000
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# SMTP (for sending emails)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+SMTP_FROM_EMAIL=noreply@yourdomain.com
+SMTP_FROM_NAME=Game Aggregator
+
+# Environment
 NODE_ENV=development
 ```
 
 **Generate auth secret**: `openssl rand -base64 32`
+
+**Email Setup**: See [NODEMAILER_SETUP_GUIDE.md](NODEMAILER_SETUP_GUIDE.md) for configuring Gmail, SendGrid, Mailgun, AWS SES, or other SMTP providers.
 
 ### Adding New Variables
 1. Add schema to `env.ts`:
@@ -303,12 +345,15 @@ When creating new canvas games, follow this pattern for consistent performance.
 ### Pre-deployment Checklist
 1. Copy `.env.example` to `.env` and fill in values
 2. Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32`
-3. Run `bun lint` to check for errors
-4. Run `bun build` to verify production build
-5. Check API documentation at `/api` works correctly
-6. Verify all game mechanics function properly
-7. Test authentication flows (sign up, sign in, sign out)
-8. Verify admin panel access control
+3. Configure SMTP credentials (see [NODEMAILER_SETUP_GUIDE.md](NODEMAILER_SETUP_GUIDE.md))
+4. Set up Google OAuth credentials (see `.env.example`)
+5. Run `bun lint` to check for errors
+6. Run `bun build` to verify production build
+7. Check API documentation at `/api` works correctly
+8. Verify all game mechanics function properly
+9. Test authentication flows (email/password, OTP, Google OAuth)
+10. Test email sending (sign-up verification, password reset, OTP)
+11. Verify admin panel access control
 
 ## Common Patterns
 
@@ -344,9 +389,17 @@ This is a standard Next.js application deployable to:
 
 Ensure all environment variables are set:
 - `MONGODB_URI` - MongoDB connection string
+- `MONGODB_DB_NAME` - Database name
 - `BETTER_AUTH_SECRET` - Minimum 32 characters (use `openssl rand -base64 32`)
-- `BETTER_AUTH_URL` - Your production URL
+- `BETTER_AUTH_URL` - Your production URL (e.g., https://yourdomain.com)
+- `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` - Google OAuth credentials
+- `SMTP_*` - Email server credentials (see [NODEMAILER_SETUP_GUIDE.md](NODEMAILER_SETUP_GUIDE.md))
 - `NODE_ENV` - Set to `production`
+
+**Important for Production**:
+- Set `requireEmailVerification: true` in [lib/auth.ts:16](lib/auth.ts#L16)
+- Use a reliable SMTP provider (SendGrid, AWS SES, Mailgun) instead of Gmail
+- Set up SPF, DKIM, and DMARC records for your email domain
 
 ## Admin Panel Features
 
