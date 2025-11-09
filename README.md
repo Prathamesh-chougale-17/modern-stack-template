@@ -2,7 +2,7 @@
 
 <div align="center">
 
-A modern blockchain-based gaming platform built on Algorand with integrated authentication, role-based access control (RBAC), and beautiful UI components.
+A modern Nextjs Template with integrated authentication, role-based access control (RBAC), and beautiful UI components.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
@@ -20,7 +20,6 @@ A modern blockchain-based gaming platform built on Algorand with integrated auth
 
 ### Core Features
 
-- 🎮 **Gaming Platform** - Multiple blockchain-integrated games with Algorand staking
 - 🔐 **Multi-Auth System** - Email/password, OTP, and Google OAuth authentication
 - 📧 **Email System** - Beautiful HTML emails with Nodemailer (OTP, verification, welcome)
 - 👥 **RBAC** - Role-based access control (user, admin, super-admin)
@@ -87,7 +86,7 @@ graph TB
     end
 
     subgraph Data ["Data Layer"]
-        MongoDB[(MongoDB)]
+        MongoDB[MongoDB]
         Adapter[MongoDB Adapter]
         Collections[Collections: user, session, account]
     end
@@ -119,7 +118,7 @@ sequenceDiagram
     participant MongoDB
     participant SMTP
 
-    rect rgb(200, 220, 250)
+    rect rgb(100, 150, 200)
         Note over User,SMTP: Email/Password Sign Up
         User->>Client: Enter email & password
         Client->>Next.js: POST /api/auth/sign-up
@@ -133,7 +132,7 @@ sequenceDiagram
         BetterAuth-->>Client: Session cookie
     end
 
-    rect rgb(220, 250, 220)
+    rect rgb(100, 180, 100)
         Note over User,SMTP: OTP Sign In
         User->>Client: Enter email
         Client->>Next.js: POST /api/auth/otp/send
@@ -146,7 +145,7 @@ sequenceDiagram
         BetterAuth-->>Client: Session cookie
     end
 
-    rect rgb(250, 230, 200)
+    rect rgb(200, 140, 80)
         Note over User,MongoDB: Google OAuth
         User->>Client: Click "Sign in with Google"
         Client->>Next.js: Redirect to Google
@@ -292,7 +291,7 @@ graph TB
 - [Bun](https://bun.sh) (recommended) or Node.js 18+
 - MongoDB (local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
 - OpenSSL (for generating secrets)
-- SMTP credentials (Gmail, SendGrid, etc.) - See [NODEMAILER_SETUP_GUIDE.md](NODEMAILER_SETUP_GUIDE.md)
+- SMTP credentials (Gmail, SendGrid, etc.) - See [NODEMAILER_SETUP_GUIDE.md](implemented/NODEMAILER_SETUP_GUIDE.md)
 
 ### Installation
 
@@ -379,7 +378,7 @@ db.user.updateOne(
 
 ### Quick Links
 
-- 📚 **[NODEMAILER_SETUP_GUIDE.md](NODEMAILER_SETUP_GUIDE.md)** - Complete email setup guide (Gmail, SendGrid, AWS SES, etc.)
+- 📚 **[NODEMAILER_SETUP_GUIDE.md](implemented/NODEMAILER_SETUP_GUIDE.md)** - Complete email setup guide (Gmail, SendGrid, AWS SES, etc.)
 - 📚 **[CLAUDE.md](CLAUDE.md)** - Architecture and development guide for AI assistants
 - 🎨 **[Component Gallery](http://localhost:3000)** - Browse all UI components when dev server is running
 
@@ -802,7 +801,7 @@ const { text } = await generateText({
 - [Next.js Documentation](https://nextjs.org/docs) - Next.js features and API
 - [Better Auth Documentation](https://www.better-auth.com) - Authentication guides
 - [shadcn/ui Documentation](https://ui.shadcn.com) - UI component library
-- [oRPC Documentation](https://orpc.netlify.app) - Type-safe RPC framework
+- [oRPC Documentation](https://orpc.unnoq.com/docs/getting-started) - Type-safe RPC framework
 - [MongoDB Documentation](https://www.mongodb.com/docs) - Database guides
 - [Tailwind CSS](https://tailwindcss.com/docs) - Utility-first CSS
 
@@ -810,7 +809,7 @@ const { text } = await generateText({
 
 - [Next.js Discord](https://nextjs.org/discord)
 - [Better Auth GitHub](https://github.com/better-auth/better-auth)
-- [shadcn/ui Twitter](https://twitter.com/shadcn)
+- [shadcn/ui Twitter](https://x.com/shadcn)
 
 ---
 
@@ -844,7 +843,7 @@ mongod
 
 - Check SMTP credentials in `.env`
 - For Gmail, use App Password, not regular password
-- See [NODEMAILER_SETUP_GUIDE.md](NODEMAILER_SETUP_GUIDE.md) for troubleshooting
+- See [NODEMAILER_SETUP_GUIDE.md](implemented/NODEMAILER_SETUP_GUIDE.md) for troubleshooting
 
 **Build Errors**
 
@@ -877,7 +876,7 @@ Built with:
 - [Next.js](https://nextjs.org/) by Vercel
 - [Better Auth](https://www.better-auth.com/) for authentication
 - [shadcn/ui](https://ui.shadcn.com/) for UI components
-- [oRPC](https://orpc.netlify.app/) for type-safe APIs
+- [oRPC](https://orpc.unnoq.com/docs/getting-started) for type-safe APIs
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [MongoDB](https://www.mongodb.com/) for database
 - [Nodemailer](https://nodemailer.com/) for email delivery
@@ -886,8 +885,8 @@ Built with:
 
 <div align="center">
 
-Made with ❤️ by the Game Aggregator Team
+Made with ❤️ by the Prathamesh Chougale
 
-[Report Bug](https://github.com/yourusername/game-aggregator/issues) • [Request Feature](https://github.com/yourusername/game-aggregator/issues)
+[Report Bug](https://github.com/prathamesh-chougale-17/game-aggregator/issues) • [Request Feature](https://github.com/prathamesh-chougale-17/game-aggregator/issues)
 
 </div>
