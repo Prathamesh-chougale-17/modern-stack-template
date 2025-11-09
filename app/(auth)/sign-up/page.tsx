@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +57,19 @@ export default function SignUpPage() {
       setError(err instanceof Error ? err.message : "Failed to create account");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    setGoogleLoading(true);
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard",
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to sign up with Google");
+      setGoogleLoading(false);
     }
   };
 
@@ -126,7 +141,7 @@ export default function SignUpPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full" disabled={loading || googleLoading}>
               {loading ? (
                 <>
                   <Spinner className="mr-2 h-4 w-4" />
@@ -136,6 +151,38 @@ export default function SignUpPage() {
                 "Sign Up"
               )}
             </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleSignUp}
+              disabled={loading || googleLoading}
+            >
+              {googleLoading ? (
+                <>
+                  <Spinner className="mr-2 h-4 w-4" />
+                  Connecting...
+                </>
+              ) : (
+                <>
+                  <FcGoogle className="mr-2 h-4 w-4" />
+                  Sign up with Google
+                </>
+              )}
+            </Button>
+
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link
